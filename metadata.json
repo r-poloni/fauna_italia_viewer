@@ -1,5 +1,5 @@
 {
-  "name": "Italian Species Distribution Visualizer",
-  "description": "Interactive table and map visualization for species distribution across Italian regions and macro-regions.",
+  "name": "Checklist of Italian fauna viewer",
+  "description": "Interactive table and map visualization for species distribution across Italian regions and macro-regions",
   "requestFramePermissions": []
 }
