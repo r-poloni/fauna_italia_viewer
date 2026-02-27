@@ -99,7 +99,7 @@ export const MapView: React.FC<MapViewProps> = ({ data, onRegionClick }) => {
     // Projection centered on Italy, adjusted for wider aspect ratio
     const projection = d3.geoMercator()
       .center([12.5, 41.8])
-      .scale(3800)
+      .scale(3420)
       .translate([width / 2, height / 2]);
 
     const pathGenerator = d3.geoPath().projection(projection);
@@ -171,13 +171,7 @@ export const MapView: React.FC<MapViewProps> = ({ data, onRegionClick }) => {
   }, [geoData, data, stats]);
 
   return (
-    <div className="w-full h-full min-h-[500px] bg-[#fdfdfb] rounded-[2rem] p-6 border border-stone-200 flex flex-col items-center relative overflow-hidden shadow-2xl shadow-stone-200/50">
-      {/* Editorial Header */}
-      <div className="mb-4 text-center max-w-xl">
-        <p className="text-[10px] font-sans text-stone-400 uppercase tracking-[0.4em] font-bold">Territorial Distribution Analysis</p>
-        <div className="h-px w-16 bg-stone-300 mx-auto mt-2"></div>
-      </div>
-
+    <div className="w-full h-full min-h-[500px] bg-[#fdfdfb] rounded-[2rem] px-6 py-2 border border-stone-200 flex flex-col items-center relative shadow-2xl shadow-stone-200/50">
       <div className="relative w-full max-w-[900px] aspect-[6/4] flex items-center justify-center gap-8">
         {/* Vertical Legend Card (Moved to Left, 4:1 Aspect Ratio) */}
         <div className="w-24 h-[400px] bg-white border border-stone-100 rounded-[1.5rem] p-4 shadow-sm flex flex-col gap-8 flex-shrink-0">
@@ -214,7 +208,7 @@ export const MapView: React.FC<MapViewProps> = ({ data, onRegionClick }) => {
           <svg 
             ref={svgRef}
             viewBox="0 0 1200 800" 
-            className="w-full h-full max-h-[500px]"
+            className="w-full h-full"
             style={{ filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.06))' }}
           ></svg>
 
