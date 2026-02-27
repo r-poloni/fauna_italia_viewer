@@ -33,63 +33,65 @@ export const Sidebar: React.FC<SidebarProps> = ({
   };
 
   return (
-    <div className="w-80 flex-shrink-0 bg-white border-r border-zinc-200 h-full overflow-y-auto p-6 space-y-8">
-      <div>
-        <h3 className="text-sm font-bold text-zinc-900 uppercase tracking-wider mb-4">Columns</h3>
-        <div className="space-y-2">
-          {sidebarColumns.map(col => (
-            <label key={col} className="flex items-center gap-3 group cursor-pointer">
-              <input
-                type="checkbox"
-                className="w-4 h-4 rounded border-zinc-300 text-indigo-600 focus:ring-indigo-500"
-                checked={selectedColumns.includes(col)}
-                onChange={() => onColumnToggle(col)}
-              />
-              <span className="text-sm text-zinc-600 group-hover:text-zinc-900 transition-colors">{col}</span>
-            </label>
-          ))}
-        </div>
-      </div>
-
-      <div>
-        <h3 className="text-sm font-bold text-zinc-900 uppercase tracking-wider mb-4">Filters</h3>
-        <div className="space-y-4">
-          {sidebarColumns.map(col => (
-            <div key={`filter-sidebar-${col}`} className="space-y-1 relative">
-              <label className="text-xs font-medium text-zinc-500 uppercase">{col}</label>
-              <div className="relative">
+    <div className="w-[500px] flex-shrink-0 bg-white border-r border-zinc-200 h-full overflow-y-auto p-6">
+      <div className="grid grid-cols-2 gap-8">
+        <div>
+          <h3 className="text-sm font-bold text-zinc-900 uppercase tracking-wider mb-4">Columns</h3>
+          <div className="space-y-2">
+            {sidebarColumns.map(col => (
+              <label key={col} className="flex items-center gap-3 group cursor-pointer">
                 <input
-                  type="text"
-                  className="w-full px-3 py-2 text-sm border border-zinc-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
-                  placeholder={`Filter ${col}...`}
-                  value={filters[col] || ''}
-                  onChange={(e) => {
-                    onFilterChange(col, e.target.value);
-                    setSuggestions(getSuggestions(col, e.target.value));
-                    setActiveSearchCol(col);
-                  }}
-                  onFocus={() => {
-                    setSuggestions(getSuggestions(col, filters[col] || ''));
-                    setActiveSearchCol(col);
-                  }}
-                  onBlur={() => setTimeout(() => setActiveSearchCol(null), 200)}
+                  type="checkbox"
+                  className="w-4 h-4 rounded border-zinc-300 text-indigo-600 focus:ring-indigo-500"
+                  checked={selectedColumns.includes(col)}
+                  onChange={() => onColumnToggle(col)}
                 />
-                {activeSearchCol === col && suggestions.length > 0 && (
-                  <div className="absolute z-50 w-full mt-1 bg-white border border-zinc-200 rounded-lg shadow-xl overflow-hidden">
-                    {suggestions.map((s, i) => (
-                      <button
-                        key={i}
-                        className="w-full text-left px-3 py-2 text-sm hover:bg-zinc-50 transition-colors border-b border-zinc-100 last:border-0"
-                        onClick={() => onFilterChange(col, s)}
-                      >
-                        {s}
-                      </button>
-                    ))}
-                  </div>
-                )}
+                <span className="text-sm text-zinc-600 group-hover:text-zinc-900 transition-colors">{col}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <h3 className="text-sm font-bold text-zinc-900 uppercase tracking-wider mb-4">Filters</h3>
+          <div className="space-y-4">
+            {sidebarColumns.map(col => (
+              <div key={`filter-sidebar-${col}`} className="space-y-1 relative">
+                <label className="text-xs font-medium text-zinc-500 uppercase">{col}</label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    className="w-full px-3 py-2 text-sm border border-zinc-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+                    placeholder={`Filter ${col}...`}
+                    value={filters[col] || ''}
+                    onChange={(e) => {
+                      onFilterChange(col, e.target.value);
+                      setSuggestions(getSuggestions(col, e.target.value));
+                      setActiveSearchCol(col);
+                    }}
+                    onFocus={() => {
+                      setSuggestions(getSuggestions(col, filters[col] || ''));
+                      setActiveSearchCol(col);
+                    }}
+                    onBlur={() => setTimeout(() => setActiveSearchCol(null), 200)}
+                  />
+                  {activeSearchCol === col && suggestions.length > 0 && (
+                    <div className="absolute z-50 w-full mt-1 bg-white border border-zinc-200 rounded-lg shadow-xl overflow-hidden">
+                      {suggestions.map((s, i) => (
+                        <button
+                          key={i}
+                          className="w-full text-left px-3 py-2 text-sm hover:bg-zinc-50 transition-colors border-b border-zinc-100 last:border-0"
+                          onClick={() => onFilterChange(col, s)}
+                        >
+                          {s}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     </div>

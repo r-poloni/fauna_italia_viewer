@@ -93,13 +93,13 @@ export const MapView: React.FC<MapViewProps> = ({ data, onRegionClick }) => {
     const svg = d3.select(svgRef.current);
     svg.selectAll("*").remove(); // Clear previous render
 
-    const width = 700;
-    const height = 900;
+    const width = 1200;
+    const height = 800;
 
-    // Projection centered on Italy, adjusted to include Sardinia/Corsica properly
+    // Projection centered on Italy, adjusted for wider aspect ratio
     const projection = d3.geoMercator()
-      .center([12.5, 42])
-      .scale(3200)
+      .center([12.5, 41.8])
+      .scale(3800)
       .translate([width / 2, height / 2]);
 
     const pathGenerator = d3.geoPath().projection(projection);
@@ -115,7 +115,7 @@ export const MapView: React.FC<MapViewProps> = ({ data, onRegionClick }) => {
         return code ? getColor(code) : '#f8f9fa';
       })
       .attr("stroke", "#fff")
-      .attr("stroke-width", 1.5)
+      .attr("stroke-width", 1.2)
       .attr("class", "transition-all duration-500 cursor-pointer hover:opacity-80")
       .on("click", (event, d: any) => {
         const code = TOPO_NAME_TO_CODE[d.properties.reg_name];
@@ -127,7 +127,7 @@ export const MapView: React.FC<MapViewProps> = ({ data, onRegionClick }) => {
       })
       .on("mouseleave", () => setHoveredRegion(null));
 
-    // Add Corsica (Integrated geographically above Sardinia)
+    // Add Corsica
     const corsicaData = {
       type: "Feature",
       properties: { reg_name: "Corsica", code: "Cor" },
@@ -142,13 +142,13 @@ export const MapView: React.FC<MapViewProps> = ({ data, onRegionClick }) => {
       .attr("d", pathGenerator as any)
       .attr("fill", getColor('Cor'))
       .attr("stroke", "#fff")
-      .attr("stroke-width", 1.5)
+      .attr("stroke-width", 1.2)
       .attr("class", "transition-all duration-500 cursor-pointer hover:opacity-80")
       .on("click", () => onRegionClick('Cor'))
       .on("mouseenter", () => setHoveredRegion('Cor'))
       .on("mouseleave", () => setHoveredRegion(null));
 
-    // Add Micro-states (San Marino and Vatican City)
+    // Add Micro-states
     const microStates = [
       { name: "San Marino", code: "RSM", lat: 43.93, lon: 12.45 },
       { name: "Vatican City", code: "CV", lat: 41.90, lon: 12.45 }
@@ -160,10 +160,10 @@ export const MapView: React.FC<MapViewProps> = ({ data, onRegionClick }) => {
       .attr("class", "micro-state transition-all duration-500 cursor-pointer hover:opacity-80")
       .attr("cx", d => projection([d.lon, d.lat])![0])
       .attr("cy", d => projection([d.lon, d.lat])![1])
-      .attr("r", 4)
+      .attr("r", 3)
       .attr("fill", d => getColor(d.code))
       .attr("stroke", "#fff")
-      .attr("stroke-width", 1)
+      .attr("stroke-width", 0.8)
       .on("click", (event, d) => onRegionClick(d.code))
       .on("mouseenter", (event, d) => setHoveredRegion(d.code))
       .on("mouseleave", () => setHoveredRegion(null));
@@ -171,104 +171,96 @@ export const MapView: React.FC<MapViewProps> = ({ data, onRegionClick }) => {
   }, [geoData, data, stats]);
 
   return (
-    <div className="w-full h-full min-h-[950px] bg-[#fdfdfb] rounded-[3rem] p-12 border border-stone-200 flex flex-col items-center relative overflow-hidden shadow-2xl shadow-stone-200/50">
+    <div className="w-full h-full min-h-[500px] bg-[#fdfdfb] rounded-[2rem] p-6 border border-stone-200 flex flex-col items-center relative overflow-hidden shadow-2xl shadow-stone-200/50">
       {/* Editorial Header */}
-      <div className="mb-12 text-center max-w-xl">
-        <p className="text-xs font-sans text-stone-400 uppercase tracking-[0.4em] font-bold">Territorial Distribution Analysis</p>
-        <div className="h-px w-32 bg-stone-300 mx-auto mt-6"></div>
+      <div className="mb-4 text-center max-w-xl">
+        <p className="text-[10px] font-sans text-stone-400 uppercase tracking-[0.4em] font-bold">Territorial Distribution Analysis</p>
+        <div className="h-px w-16 bg-stone-300 mx-auto mt-2"></div>
       </div>
 
-      <div className="relative w-full max-w-[700px] aspect-[7/9] flex justify-center">
-        <svg 
-          ref={svgRef}
-          viewBox="0 0 700 900" 
-          className="w-full h-full"
-          style={{ filter: 'drop-shadow(0 40px 60px rgba(0,0,0,0.08))' }}
-        ></svg>
-
-        {/* Manual Insets for CT and M - Geographically distant but relevant */}
-        <div className="absolute top-0 right-0 flex flex-col gap-6">
-          <div className="group flex flex-col items-center gap-2">
-            <div 
-              className="w-24 h-24 bg-white border border-stone-100 rounded-3xl p-4 shadow-sm flex flex-col items-center justify-center cursor-pointer group-hover:bg-stone-50 transition-all" 
-              onClick={() => onRegionClick('CT')}
-              onMouseEnter={() => setHoveredRegion('CT')}
-              onMouseLeave={() => setHoveredRegion(null)}
-            >
-              <div className="w-full h-full rounded-xl transition-transform group-hover:scale-110" style={{ backgroundColor: getColor('CT') }}></div>
-            </div>
-            <span className="text-[10px] font-bold text-stone-400 uppercase tracking-[0.3em]">Ticino</span>
+      <div className="relative w-full max-w-[900px] aspect-[6/4] flex items-center justify-center gap-8">
+        {/* Vertical Legend Card (Moved to Left, 4:1 Aspect Ratio) */}
+        <div className="w-24 h-[400px] bg-white border border-stone-100 rounded-[1.5rem] p-4 shadow-sm flex flex-col gap-8 flex-shrink-0">
+          <div className="flex flex-col">
+            <h3 className="text-[10px] font-bold text-stone-900 uppercase tracking-[0.2em] mb-1">Legend</h3>
+            <p className="text-[8px] text-stone-400 uppercase tracking-widest">Regional</p>
           </div>
           
-          <div className="group flex flex-col items-center gap-2">
-            <div 
-              className="w-24 h-24 bg-white border border-stone-100 rounded-3xl p-4 shadow-sm flex flex-col items-center justify-center cursor-pointer group-hover:bg-stone-50 transition-all" 
-              onClick={() => onRegionClick('M')}
-              onMouseEnter={() => setHoveredRegion('M')}
-              onMouseLeave={() => setHoveredRegion(null)}
-            >
-              <div className="w-full h-full rounded-xl transition-transform group-hover:scale-110" style={{ backgroundColor: getColor('M') }}></div>
+          {data.length === 1 ? (
+            <div className="flex flex-col gap-6 mt-4">
+              <div className="flex flex-col items-center gap-2">
+                <div className="w-4 h-4 rounded-full bg-[#86efac] border border-white shadow-sm"></div>
+                <span className="text-[8px] font-bold text-stone-500 uppercase tracking-widest">Present</span>
+              </div>
+              <div className="flex flex-col items-center gap-2">
+                <div className="w-4 h-4 rounded-full bg-[#fef08a] border border-white shadow-sm"></div>
+                <span className="text-[8px] font-bold text-stone-500 uppercase tracking-widest">Doubtful</span>
+              </div>
+              <div className="flex flex-col items-center gap-2">
+                <div className="w-4 h-4 rounded-full bg-[#f1f5f9] border border-white shadow-sm"></div>
+                <span className="text-[8px] font-bold text-stone-500 uppercase tracking-widest">Absent</span>
+              </div>
             </div>
-            <span className="text-[10px] font-bold text-stone-400 uppercase tracking-[0.3em]">Malta</span>
-          </div>
+          ) : (
+            <div className="flex-1 flex flex-col items-center justify-between py-4">
+              <span className="text-[8px] font-bold text-[#B31529] uppercase tracking-[0.2em]">{Math.max(...(Object.values(stats.regionStats) as number[]))} Max</span>
+              <div className="flex-1 w-2 my-4 rounded-full bg-gradient-to-b from-[#B31529] to-[#1065AB] shadow-inner"></div>
+              <span className="text-[8px] font-bold text-[#1065AB] uppercase tracking-[0.2em]">{Math.min(...(Object.values(stats.regionStats) as number[]))} Min</span>
+            </div>
+          )}
         </div>
 
-        {/* Floating Info Card */}
-        {hoveredRegion && (
-          <div className="absolute bottom-20 left-0 bg-white border border-stone-100 p-8 rounded-[2.5rem] shadow-[0_40px_80px_rgba(0,0,0,0.12)] animate-in fade-in slide-in-from-bottom-8 duration-500 z-50 min-w-[280px]">
-            <div className="text-[11px] font-bold text-stone-400 uppercase tracking-[0.3em] mb-3">Territory</div>
-            <div className="text-3xl font-serif italic text-stone-900 mb-6">{REGIONS_MAP[hoveredRegion] || hoveredRegion}</div>
-            <div className="flex items-center justify-between border-t border-stone-50 pt-6">
-              <div>
-                <div className="text-[10px] text-stone-400 uppercase font-bold tracking-widest mb-2">Species Count</div>
-                <div className="text-5xl font-light text-stone-900 leading-none">
-                  {stats.regionStats[hoveredRegion] || 0}
+        <div className="flex-1 relative h-full flex justify-center">
+          <svg 
+            ref={svgRef}
+            viewBox="0 0 1200 800" 
+            className="w-full h-full max-h-[500px]"
+            style={{ filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.06))' }}
+          ></svg>
+
+          {/* Smaller Manual Insets (20% smaller: 16 -> 13) */}
+          <div className="absolute top-4 right-4 flex flex-col gap-4">
+            <div className="group flex flex-col items-center gap-1">
+              <div 
+                className="w-13 h-13 bg-white border border-stone-100 rounded-xl p-1.5 shadow-sm flex flex-col items-center justify-center cursor-pointer group-hover:bg-stone-50 transition-all" 
+                onClick={() => onRegionClick('CT')}
+                onMouseEnter={() => setHoveredRegion('CT')}
+                onMouseLeave={() => setHoveredRegion(null)}
+              >
+                <div className="w-full h-full rounded-md transition-transform group-hover:scale-110" style={{ backgroundColor: getColor('CT') }}></div>
+              </div>
+              <span className="text-[7px] font-bold text-stone-400 uppercase tracking-[0.2em]">Ticino</span>
+            </div>
+            
+            <div className="group flex flex-col items-center gap-1">
+              <div 
+                className="w-13 h-13 bg-white border border-stone-100 rounded-xl p-1.5 shadow-sm flex flex-col items-center justify-center cursor-pointer group-hover:bg-stone-50 transition-all" 
+                onClick={() => onRegionClick('M')}
+                onMouseEnter={() => setHoveredRegion('M')}
+                onMouseLeave={() => setHoveredRegion(null)}
+              >
+                <div className="w-full h-full rounded-md transition-transform group-hover:scale-110" style={{ backgroundColor: getColor('M') }}></div>
+              </div>
+              <span className="text-[7px] font-bold text-stone-400 uppercase tracking-[0.2em]">Malta</span>
+            </div>
+          </div>
+
+          {/* Floating Info Card */}
+          {hoveredRegion && (
+            <div className="absolute bottom-10 left-0 bg-white border border-stone-100 p-6 rounded-[2rem] shadow-[0_20px_40px_rgba(0,0,0,0.1)] animate-in fade-in slide-in-from-bottom-4 duration-500 z-50 min-w-[220px]">
+              <div className="text-[9px] font-bold text-stone-400 uppercase tracking-[0.3em] mb-2">Territory</div>
+              <div className="text-xl font-serif italic text-stone-900 mb-4">{REGIONS_MAP[hoveredRegion] || hoveredRegion}</div>
+              <div className="flex items-center justify-between border-t border-stone-50 pt-4">
+                <div>
+                  <div className="text-[9px] text-stone-400 uppercase font-bold tracking-widest mb-1">Species</div>
+                  <div className="text-3xl font-light text-stone-900 leading-none">
+                    {stats.regionStats[hoveredRegion] || 0}
+                  </div>
                 </div>
               </div>
-              <div className="w-12 h-12 rounded-full border border-stone-100 flex items-center justify-center text-stone-300">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-              </div>
             </div>
-          </div>
-        )}
-      </div>
-
-      {/* Legend Card */}
-      <div className="mt-auto w-full max-w-2xl bg-white border border-stone-100 rounded-[2.5rem] p-10 shadow-sm">
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex flex-col">
-            <h3 className="text-sm font-bold text-stone-900 uppercase tracking-[0.2em] mb-2">Map Legend</h3>
-            <p className="text-[11px] text-stone-400">Data resolution: <span className="text-stone-600 font-bold uppercase tracking-widest">Regional</span></p>
-          </div>
-          <div className="flex gap-2">
-            {[1,2,3,4].map(i => <div key={i} className="w-1.5 h-1.5 rounded-full bg-stone-200"></div>)}
-          </div>
+          )}
         </div>
-        
-        {data.length === 1 ? (
-          <div className="grid grid-cols-3 gap-12">
-            <div className="flex items-center gap-5">
-              <div className="w-6 h-6 rounded-full bg-[#86efac] border-2 border-white shadow-lg"></div>
-              <span className="text-[11px] font-bold text-stone-500 uppercase tracking-widest">Present</span>
-            </div>
-            <div className="flex items-center gap-5">
-              <div className="w-6 h-6 rounded-full bg-[#fef08a] border-2 border-white shadow-lg"></div>
-              <span className="text-[11px] font-bold text-stone-500 uppercase tracking-widest">Doubtful</span>
-            </div>
-            <div className="flex items-center gap-5">
-              <div className="w-6 h-6 rounded-full bg-[#f1f5f9] border-2 border-white shadow-lg"></div>
-              <span className="text-[11px] font-bold text-stone-500 uppercase tracking-widest">Absent</span>
-            </div>
-          </div>
-        ) : (
-          <div className="space-y-6">
-            <div className="h-2 w-full rounded-full bg-gradient-to-r from-[#1065AB] to-[#B31529] shadow-inner"></div>
-            <div className="flex justify-between text-[10px] font-bold text-stone-400 uppercase tracking-[0.4em]">
-              <span>{Math.min(...(Object.values(stats.regionStats) as number[]))} Species</span>
-              <span>{Math.max(...(Object.values(stats.regionStats) as number[]))} Species</span>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
