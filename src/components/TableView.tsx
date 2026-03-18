@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { SpeciesData, RETAINED_COLUMNS } from '../types';
-import { ChevronUp, ChevronDown, Search } from 'lucide-react';
+import { ChevronUp, ChevronDown, Search, Download } from 'lucide-react';
 
 interface TableViewProps {
   data: SpeciesData[];
@@ -59,8 +59,42 @@ export const TableView: React.FC<TableViewProps> = ({ data }) => {
     });
   };
 
+  const exportToCSV = () => {
+    const headers = RETAINED_COLUMNS.join(',');
+    const rows = sortedData.map(row => 
+      RETAINED_COLUMNS.map(col => {
+        const val = row[col] || '';
+        const escaped = String(val).replace(/"/g, '""');
+        return `"${escaped}"`;
+      }).join(',')
+    );
+    const csvContent = [headers, ...rows].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'species_filtered_data.csv');
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
-    <div className="overflow-x-auto border border-zinc-200 rounded-xl bg-white shadow-sm">
+    <div className="space-y-4">
+      <div className="flex justify-between items-center">
+        <div className="text-sm text-zinc-500">
+          Showing <span className="font-semibold text-zinc-900">{sortedData.length}</span> species
+        </div>
+        <button
+          onClick={exportToCSV}
+          className="flex items-center gap-2 px-4 py-2 bg-zinc-900 text-white text-sm font-medium rounded-lg hover:bg-zinc-800 transition-colors shadow-sm"
+        >
+          <Download size={16} />
+          Export CSV
+        </button>
+      </div>
+      <div className="overflow-x-auto border border-zinc-200 rounded-xl bg-white shadow-sm">
       <table className="w-full text-left border-collapse min-w-[1200px]">
         <thead>
           <tr className="bg-zinc-50 border-b border-zinc-200">
@@ -114,6 +148,7 @@ export const TableView: React.FC<TableViewProps> = ({ data }) => {
           No data found matching the filters.
         </div>
       )}
+    </div>
     </div>
   );
 };
